@@ -1,4 +1,14 @@
 .ipynb_checkpoints
 .div2k
 .ckpt
-
+*.txt
+*.tif
+*.java
+*.py
+*.html
+*.c
+*.exe
+*.win
+*.docx
+*.avi
+*.mp4
