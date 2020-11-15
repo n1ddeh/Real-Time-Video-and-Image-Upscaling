@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http.response import StreamingHttpResponse
-from streamapp.camera import VideoCamera
+from streamapp.camera import VideoCamera, CompressedCamera
 # Create your views here.
 
 
@@ -11,18 +11,6 @@ def index(request):
 def gen(camera):
 	while True:
 		frame = camera.get_frame()
-		
-		yield (b'--frame\r\n'
-				b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-
-		compressed_frame = camera.get_compressed_frame()
-
-		yield (b'--frame\r\n'
-				b'Content-Type: image/jpeg\r\n\r\n' + compressed_frame + b'\r\n\r\n')
-
-def compressed_gen(camera):
-	while True:
-		frame = camera.get_compressed_frame()
 		yield (b'--frame\r\n'
 				b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
@@ -31,5 +19,5 @@ def video_feed(request):
 					content_type='multipart/x-mixed-replace; boundary=frame')
 
 def compressed_feed(request):
-	return StreamingHttpResponse(compressed_gen(VideoCamera()),
+	return StreamingHttpResponse(gen(CompressedCamera(scale=30)),
 					content_type='multipart/x-mixed-replace; boundary=frame')

@@ -26,13 +26,9 @@ if gpus:
 
 
 class VideoCamera(object):
-	def __init__(self, scale=20):
+	def __init__(self):
 		self.video = cv2.VideoCapture(0)
 		self.image = self.get_frame()
-
-		self.compressed_image = self.get_compressed_frame() # numpy array
-
-		#self.upscaled_frame = self.upscale_frame() # numpy array
 
 	def __del__(self):
 		self.video.release()
@@ -46,14 +42,25 @@ class VideoCamera(object):
 		ret, jpeg = cv2.imencode('.jpg', image)
 		return jpeg.tobytes()
 
-	def get_compressed_frame(self):
-		success, image = self.video.read()
-		scale = 30
-		width = int(image.shape[1] * (scale/100))
-		height = int(image.shape[0] * (scale/100))
+
+
+class CompressedCamera(object):
+	def __init__(self, scale=30):
+		self.video = cv2.VideoCapture(0)
+		self.image = self.get_frame()
+		self.scale = scale
+
+	def __del__(self):
+		self.video.release()
+
+	def get_frame(self):
+		success, image = self.video.read() # Bool, numpy array
+		width = int(image.shape[1] * (self.scale/100))
+		height = int(image.shape[0] * (self.scale/100))
 		dim = (width, height)
-
-		crop = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
-
+		crop = cv2.resize(frame, dim, interpolation = cv2.INTER_CUBIC)
 		ret, jpeg = cv2.imencode('.jpg', crop)
 		return jpeg.tobytes()
+
+
+
