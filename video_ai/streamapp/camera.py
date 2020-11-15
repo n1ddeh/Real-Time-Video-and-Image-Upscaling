@@ -1,4 +1,4 @@
-import tensorflow
+import tensorflow as tf
 from imutils.video import VideoStream
 import imutils
 import cv2,os,urllib.request
@@ -8,34 +8,41 @@ from model.srgan import generator
 from model.wdsr import wdsr_b
 from model import resolve_single
 
-# load our serialized face detector model from disk
 # SRGAN
 srgan_model = generator()
 srgan_model.load_weights('weights/srgan/gan_generator.h5')
 
-#WDSR
-wdsr_model = wdsr_b(scale=4, num_res_blocks=32)
-wdsr_model.load_weights('weights/wdsr/wdsr-b-32-x4.h5')
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+  try:
+    # Currently, memory growth needs to be the same across GPUs
+    for gpu in gpus:
+      tf.config.experimental.set_memory_growth(gpu, True)
+    logical_gpus = tf.config.experimental.list_logical_devices('GPU')
+    print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+  except RuntimeError as e:
+    # Memory growth must be set before GPUs have been initialized
+    print(e)
 
 
 class VideoCamera(object):
 	def __init__(self, scale=20):
 		self.video = cv2.VideoCapture(0)
-		self.image = self.get_frame()
-		success, self.frame = self.video.read()
+		self.success, self.frame = self.video.read() # Bool, numpy array
+		
 		self.scale = scale
-		self.compressed_image = self.compress_frame()
-		self.upscaled_frame = self.upscale_frame()
+		self.compressed_image = self.compress_frame() # numpy array
+
+		self.upscaled_frame = self.upscale_frame() # numpy array
 
 	def __del__(self):
 		self.video.release()
 
-	def get_frame(self):
-		success, self.image = self.video.read() 
+	def get_image(self):
 		# We are using Motion JPEG, but OpenCV defaults to capture raw images,
 		# so we must encode it into JPEG in order to correctly display the
 		# video stream
-		ret, jpeg = cv2.imencode('.jpg', self.image)
+		ret, jpeg = cv2.imencode('.jpg', self.frame)
 		return jpeg.tobytes()
 
 	def compress_frame(self):
@@ -51,14 +58,13 @@ class VideoCamera(object):
 		return jpeg
 		
 
-	def get_image(self):
-		return self.image
-
 	def get_scale(self):
 		return self.scale
 
 	def get_compressed_image(self):
-		return self.compressed_image
+		ret, jpeg = cv2.imencode('.jpg', self.compressed_image)
+		return jpeg
 
 	def get_upscaled_image(self):
-		return self.upscaled_frame
+		ret, jpeg = cv2.imencode('.jpg', self.upscale)
+		return jpeg
