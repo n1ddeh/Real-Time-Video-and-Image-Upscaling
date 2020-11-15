@@ -36,7 +36,7 @@ def main():
 	low_res = cv2.imread(LR_IMG_LOCATION)
 	high_res = resolve_single(srgan_model, low_res).numpy()
 
-	cv2.imwrite(HR_IMG_LOCATION, high_res)
+	cv2.imwrite(HR_IMG_LOCATION, high_res, [cv2.IMWRITE_PNG_COMPRESSION, 9])
 
 
 
