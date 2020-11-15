@@ -10,22 +10,26 @@ def index(request):
 
 def gen(camera):
 	while True:
-		frame = camera.image
+		frame = camera.get_frame()
+		
 		yield (b'--frame\r\n'
 				b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
-def gen_scale(camera):
+		compressed_frame = camera.get_compressed_frame()
+
+		yield (b'--frame\r\n'
+				b'Content-Type: image/jpeg\r\n\r\n' + compressed_frame + b'\r\n\r\n')
+
+def compressed_gen(camera):
 	while True:
-		frame = camera.upscaled_frame
+		frame = camera.get_compressed_frame()
 		yield (b'--frame\r\n'
 				b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-
-
 
 def video_feed(request):
 	return StreamingHttpResponse(gen(VideoCamera()),
 					content_type='multipart/x-mixed-replace; boundary=frame')
 
-def scaled_feed(request):
-	return StreamingHttpResponse(gen_scale(VideoCamera()),
+def compressed_feed(request):
+	return StreamingHttpResponse(compressed_gen(VideoCamera()),
 					content_type='multipart/x-mixed-replace; boundary=frame')

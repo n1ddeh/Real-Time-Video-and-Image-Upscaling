@@ -28,43 +28,32 @@ if gpus:
 class VideoCamera(object):
 	def __init__(self, scale=20):
 		self.video = cv2.VideoCapture(0)
-		self.success, self.frame = self.video.read() # Bool, numpy array
-		
-		self.scale = scale
-		self.compressed_image = self.compress_frame() # numpy array
+		self.image = self.get_frame()
 
-		self.upscaled_frame = self.upscale_frame() # numpy array
+		self.compressed_image = self.get_compressed_frame() # numpy array
+
+		#self.upscaled_frame = self.upscale_frame() # numpy array
 
 	def __del__(self):
 		self.video.release()
 
-	def get_image(self):
+	def get_frame(self):
+		success, image = self.video.read() # Bool, numpy array
+
 		# We are using Motion JPEG, but OpenCV defaults to capture raw images,
 		# so we must encode it into JPEG in order to correctly display the
 		# video stream
-		ret, jpeg = cv2.imencode('.jpg', self.frame)
+		ret, jpeg = cv2.imencode('.jpg', image)
 		return jpeg.tobytes()
 
-	def compress_frame(self):
-		width = int(self.frame.shape[1] * (self.scale/100))
-		height = int(self.frame.shape[0] * (self.scale/100))
+	def get_compressed_frame(self):
+		success, image = self.video.read()
+		scale = 30
+		width = int(image.shape[1] * (scale/100))
+		height = int(image.shape[0] * (scale/100))
 		dim = (width, height)
-		compression = cv2.resize(self.frame, dim, interpolation = cv2.INTER_CUBIC)
-		return compression
 
-	def upscale_frame(self):
-		upscale = resolve_single(srgan_model, self.compressed_image).numpy()
-		ret, jpeg = cv2.imencode('.jpg', upscale)
-		return jpeg
-		
+		crop = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
 
-	def get_scale(self):
-		return self.scale
-
-	def get_compressed_image(self):
-		ret, jpeg = cv2.imencode('.jpg', self.compressed_image)
-		return jpeg
-
-	def get_upscaled_image(self):
-		ret, jpeg = cv2.imencode('.jpg', self.upscale)
-		return jpeg
+		ret, jpeg = cv2.imencode('.jpg', crop)
+		return jpeg.tobytes()

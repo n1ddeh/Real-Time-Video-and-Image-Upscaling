@@ -5,5 +5,5 @@ from streamapp import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('video_feed', views.video_feed, name='video_feed'),
-    path('scaled_feed', views.scaled_feed, name='scaled_feed')
+    path('compressed_feed', views.compressed_feed, name='compressed_feed')
     ]
