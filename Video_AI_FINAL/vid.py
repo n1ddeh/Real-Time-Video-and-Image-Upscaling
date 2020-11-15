@@ -45,13 +45,17 @@ def main():
 		width = int(upscale.shape[1])
 		height = int(upscale.shape[0])
 		dim=(width,height)
-		fourcc = cv2.VideoWriter_fourcc(*'M','J','P','G')
+		fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 		fps = cap.get(cv2.CAP_PROP_FPS)
 		out = cv2.VideoWriter(HR_VID_LOCATION, fourcc, fps, dim)
 
+		frame = 0
 		while success == True:
 			upscale = resolve_single(srgan_model, frame).numpy()
 			out.write(upscale)
+			success, frame = cap.read()
+			print("Buffering Frame:", frame)
+			frame += 1
 
 	cap.release()
 	out.release()
