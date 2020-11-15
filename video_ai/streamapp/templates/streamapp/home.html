@@ -1,12 +1,28 @@
 <html>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <head>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <div id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'original' %}">Original Image</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'compressed' %}">Compressed Image</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'upscaled' %}">Upscaled Image</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
     <title>Video Live Stream</title>
   </head>
+
   <body>
-    <h1>Video Live Stream</h1>
-    <img src="{% url 'video_feed' %}">
-    <!-- <img src="{% url 'compressed_feed' %}">
-    <img src="{% url 'upscaled_feed' %}"> -->
+
 
   </body>
+
 </html>

@@ -5,8 +5,20 @@ from streamapp.camera import VideoCamera
 
 
 def index(request):
-	return render(request, 'streamapp/home.html')
+	context = {}
+	return render(request, 'streamapp/home.html', context)
 
+def original(request):
+	context = {}
+	return render(request, 'streamapp/Original.html', context)
+
+def compressed(request):
+	context = {}
+	return render(request, 'streamapp/Compressed.html', context)
+
+def upscaled(request):
+	context = {}
+	return render(request, 'streamapp/Upscaled.html', context)
 
 def gen(camera):
 	while True:
@@ -14,11 +26,6 @@ def gen(camera):
 		
 		yield (b'--frame\r\n'
 				b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-
-		# compressed_frame = camera.get_compressed_frame()
-
-		# yield (b'--frame\r\n'
-		# 		b'Content-Type: image/jpeg\r\n\r\n' + compressed_frame + b'\r\n\r\n')
 
 def compressed_gen(camera):
 	while True:

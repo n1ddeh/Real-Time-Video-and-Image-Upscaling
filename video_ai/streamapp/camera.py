@@ -28,10 +28,11 @@ if gpus:
 class VideoCamera(object):
 	def __init__(self, scale=20):
 		self.video = cv2.VideoCapture(0)
+		
 
-		self.image = self.get_frame()
+		self.frame = self.get_frame()
 
-		self.compressed_image = self.get_compressed_frame() # numpy array
+		self.compressed_frame = self.get_compressed_frame() # numpy array
 
 		self.upscaled_frame = self.get_upscaled_frame() # numpy array
 
